@@ -1,10 +1,11 @@
-package main
+package main;
 
 import (
 	"fmt"
 	//"io"
 	"bufio"
 	"os"
+    "strings"
 )
 
 func check(e error) {
@@ -22,8 +23,7 @@ var len int = 0
 var cur Point
 var prev Point
 
-func main() {
-
+func Day11() {
 	init_runemat()
 
 	for cur.x != -1 {
@@ -44,6 +44,22 @@ func init_runemat() {
 		runemat = append(runemat, runes)
 		println(string(runes))
 	}
+}
+
+func check_empty(line string) bool{
+    for _, t := range line {
+        if !t == '*' {
+            return false
+        }
+    }
+    return true
+}
+
+func expand_vertical(){
+    for i, row := runemat {
+        if
+    }
+        
 }
 
 // find the starting point

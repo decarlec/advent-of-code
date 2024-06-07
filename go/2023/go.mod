@@ -1,3 +1,4 @@
-module avent
+module advent
 
 go 1.22.0
+
