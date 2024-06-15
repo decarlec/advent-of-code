@@ -1,11 +1,11 @@
-package main;
+package day11
 
 import (
-	"fmt"
+	//"fmt"
 	//"io"
 	"bufio"
 	"os"
-    "strings"
+	//"strings"
 )
 
 func check(e error) {
@@ -18,22 +18,26 @@ type Point struct {
 	x, y int
 }
 
-var runemat [][]rune
-var len int = 0
-var cur Point
-var prev Point
-
 func Day11() {
-	init_runemat()
+	var runemat = read_runemat()
+	var expanded = expand_vertical(runemat)
+	var transformed = transform(expanded)
 
-	for cur.x != -1 {
-		cur = get_next(cur)
+	for _, line := range expanded {
+		println("expanded")
+		println(string(line))
+	}
+
+	for _, line := range transformed {
+		println("transformed")
+		println(string(line))
 	}
 }
 
 // initialize matrix
-func init_runemat() {
-	file, err := os.Open("./day10")
+func read_runemat() [][]rune {
+	var runemat [][]rune
+	file, err := os.Open("./input/day11")
 	check(err)
 
 	defer file.Close()
@@ -42,102 +46,49 @@ func init_runemat() {
 	for scanner.Scan() {
 		runes := []rune(scanner.Text())
 		runemat = append(runemat, runes)
-		println(string(runes))
 	}
+
+	return runemat
 }
 
-func check_empty(line string) bool{
-    for _, t := range line {
-        if !t == '*' {
-            return false
-        }
-    }
-    return true
+func check_empty(line string) bool {
+	for _, t := range []rune(line) {
+		if t != '.' {
+			return false
+		}
+	}
+	return true
 }
 
-func expand_vertical(){
-    for i, row := runemat {
-        if
-    }
-        
+func expand_vertical(runemat [][]rune) [][]rune {
+	var newMat [][]rune
+
+	for _, row := range runemat {
+		if check_empty(string(row)) {
+			newMat = append(newMat, row)
+		}
+		newMat = append(newMat, row)
+	}
+
+	return newMat
 }
 
-// find the starting point
-func find_s() Point {
+func transform(runemat [][]rune) [][]rune {
+	x := len(runemat[0])
+	y := len(runemat)
+
+	newMat := make([][]rune, x, y)
+
+	println(len(runemat))
+	println(len(newMat))
+
 	for i, row := range runemat {
-		for j, rune := range row {
-			if string(rune) == "S" {
-				return Point{j, i}
-			}
+		println(i)
+		newMat[i] = make([]rune, y)
+		for j := range row {
+			println(j)
+			newMat[j][i] = runemat[i][j]
 		}
 	}
-	panic("could not find start!")
-}
-
-// gets the next pipe for a given point. Assumes prev point cannot be next point.
-func get_next(point Point) Point {
-
-	var new_point Point
-	if len == 0 {
-		new_point = find_s()
-	} else {
-
-		rune := runemat[point.y][point.x]
-		fmt.Printf("Finding next for %s (%d,%d)\n", string(rune), point.x, point.y)
-
-		switch string(rune) {
-		case "S":
-			//finished
-			if len != 1 {
-				fmt.Println((len - 1) / 2)
-				return Point{-1, -1}
-			}
-
-			//hacky way to pick a direction
-			new_point = Point{point.x, point.y - 1}
-		default:
-			//check for possible connecting pipes
-			//find the one that isn't the one we just came from
-			opts := get_options(point)
-
-			if opts[0].x != prev.x || opts[0].y != prev.y {
-				new_point = opts[0]
-			} else if opts[1].x != prev.x || opts[1].y != prev.y {
-				new_point = opts[1]
-			} else {
-				panic("no opts not prev!")
-			}
-		}
-	}
-
-	//set prev as current, set new as current and increment count
-	prev = point
-	len = len + 1
-	fmt.Printf("Next is (%d,%d)\n", new_point.x, new_point.y)
-	return new_point
-}
-
-// gets possible connecting pipes for a point
-func get_options(point Point) [2]Point {
-	rune := runemat[point.y][point.x]
-	var opts [2]Point
-
-	switch string(rune) {
-	case "|":
-		opts = [2]Point{{point.x, point.y + 1}, {point.x, point.y - 1}}
-	case "-":
-		opts = [2]Point{{point.x + 1, point.y}, {point.x - 1, point.y}}
-	case "L":
-		opts = [2]Point{{point.x, point.y - 1}, {point.x + 1, point.y}}
-	case "J":
-		opts = [2]Point{{point.x - 1, point.y}, {point.x, point.y - 1}}
-	case "7":
-		opts = [2]Point{{point.x - 1, point.y}, {point.x, point.y + 1}}
-	case "F":
-		opts = [2]Point{{point.x, point.y + 1}, {point.x + 1, point.y}}
-	default:
-		panic("this char has no options!")
-	}
-
-	return opts
+	return newMat
 }
